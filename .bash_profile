@@ -1,36 +1,42 @@
-# PATH
-LOCAL_PATH=${HOME}/bin:${HOME}/usr/local/bin:${HOME}/usr/local/sbin:${HOME}/.gem/ruby/1.8/bin:${NODE_PATH}:/usr/local/share/npm/bin
+PATH=/usr/local/bin:$PATH
 
-if [ -z "$PATH" ]; then
-  PATH=${LOCAL_PATH}
-else
-  PATH=${LOCAL_PATH}:${PATH}
-fi
-export PATH
+#export EDITOR="code -w"
 
-# Editor
-export EDITOR='subl -w'
-
-# UTF-8 support for terminal (as of lion...[weird])
-export LC_CTYPE=en_US.UTF-8
-export LC_ALL=en_US.UTF-8
-
-# bash colors
-export CLICOLOR=1
-export LSCOLORS=ExFxCxDxBxegedabagacad
-
-# bash history
-export HISTCONTROL=ignoreboth
-export HISTSIZE=1000
-shopt -s histappend
-
-# completion
-if [ -f `brew --prefix`/etc/bash_completion ]; then
-  . `brew --prefix`/etc/bash_completion
+# Prompt with git branch (see: https://github.com/magicmonty/bash-git-prompt#via-homebrew-on-mac-os-x)
+if [ -f "$(brew --prefix)/opt/bash-git-prompt/share/gitprompt.sh" ]; then
+  __GIT_PROMPT_DIR=$(brew --prefix)/opt/bash-git-prompt/share
+  GIT_PROMPT_ONLY_IN_REPO=1
+  source "$(brew --prefix)/opt/bash-git-prompt/share/gitprompt.sh"
 fi
 
-# git
-parse_git_branch() {
-    git branch 2> /dev/null | sed -e '/^[^*]/d' -e 's/* \(.*\)/(\1)/'
+# Welcome message
+echo "Hi from your ~/.bash_profile!"
+
+# some aliases
+alias ll="ls -al"
+
+# nvm
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+
+# bash completion
+[[ -r "/usr/local/etc/profile.d/bash_completion.sh" ]] && . "/usr/local/etc/profile.d/bash_completion.sh"
+
+# rbenv
+# eval "$(rbenv init -)"export PATH="/usr/local/sbin:$PATH"
+
+# google-cloud-sdk (installed with homebrew)
+source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/path.bash.inc"
+source "/usr/local/Caskroom/google-cloud-sdk/latest/google-cloud-sdk/completion.bash.inc"
+
+# Minecraft
+alias minecraft-server="cd ~/minecraft-server && java -Xmx1024M -Xms1024M -jar minecraft_server.1.16.4.jar nogui"
+export PATH="/usr/local/sbin:$PATH"
+
+# portable vim experiment (see: https://github.com/abernier/vim)
+vimm() {
+  docker run --rm -it \
+    -v $(pwd):/media/host \
+    -w /media/host \
+    abernier/vim $*
 }
-export PS1='\[\033[01;34m\]\w\[\033[01;31m\]$(parse_git_branch)\[\033[00m\] $ '
